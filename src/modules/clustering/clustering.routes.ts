@@ -12,6 +12,8 @@ router.get('/', ClusteringController.listClusters);
 router.post('/', authenticate, requireRoles('GOVERNMENT_OFFICER', 'PLATFORM_ADMIN'), ClusteringController.createCluster);
 router.get('/:id', ClusteringController.getById);
 router.patch('/:id/review', authenticate, requireRoles('GOVERNMENT_OFFICER', 'PLATFORM_ADMIN'), ClusteringController.reviewCluster);
+router.post('/:id/members', authenticate, requireRoles('GOVERNMENT_OFFICER', 'PLATFORM_ADMIN'), ClusteringController.addMember);
+router.delete('/:id/members/:reportId', authenticate, requireRoles('GOVERNMENT_OFFICER', 'PLATFORM_ADMIN'), ClusteringController.removeMember);
 
 export default router;
 

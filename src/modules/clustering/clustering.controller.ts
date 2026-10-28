@@ -57,5 +57,32 @@ export class ClusteringController {
       next(error);
     }
   }
+
+  public static async addMember(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await ClusteringService.addMember(
+        req.params.id,
+        req.body.reportId,
+        req.body.similarityScore,
+        req.user!
+      );
+      ResponseUtil.success(res, data, 'Report added to cluster successfully');
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async removeMember(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await ClusteringService.removeMember(
+        req.params.id,
+        req.params.reportId,
+        req.user!
+      );
+      ResponseUtil.success(res, data, 'Report removed from cluster successfully');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 

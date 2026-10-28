@@ -122,6 +122,13 @@ export class ChallengesService {
         },
       });
 
+      if (data.sourceReportId) {
+        await tx.report.update({
+          where: { id: data.sourceReportId },
+          data: { status: 'LINKED_TO_CHALLENGE' },
+        });
+      }
+
       await AuditService.record(
         {
           actorId: officer.id,

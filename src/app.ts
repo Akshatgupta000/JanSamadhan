@@ -5,6 +5,7 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
 
+import path from 'path';
 import { env } from './config/env';
 import { requestIdMiddleware } from './common/middleware/request-id.middleware';
 import { apiRateLimiter } from './common/middleware/rate-limit.middleware';
@@ -39,6 +40,8 @@ import auditRouter from './modules/audit/audit.routes';
 import notificationsRouter from './modules/notifications/notifications.routes';
 import evaluationRouter from './modules/evaluation/evaluation.routes';
 import adminRouter from './modules/admin/admin.routes';
+import universitiesRouter from './modules/universities/universities.routes';
+import industryRouter from './modules/industry/industry.routes';
 
 export function createApp(): Application {
   const app = express();
@@ -55,6 +58,10 @@ export function createApp(): Application {
   app.use(cookieParser());
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+  // Static Frontend Assets for JanSamadhan Landing Page
+  const publicDir = path.resolve(process.cwd(), 'public');
+  app.use(express.static(publicDir));
 
   // Correlation ID & Rate Limiting
   app.use(requestIdMiddleware);
@@ -110,6 +117,8 @@ export function createApp(): Application {
   apiV1.use('/notifications', notificationsRouter);
   apiV1.use('/evaluation', evaluationRouter);
   apiV1.use('/admin', adminRouter);
+  apiV1.use('/universities', universitiesRouter);
+  apiV1.use('/industry', industryRouter);
 
   app.use(env.API_PREFIX, apiV1);
 

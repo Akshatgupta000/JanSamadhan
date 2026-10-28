@@ -271,5 +271,54 @@ export class ReportsService {
 
     return updated;
   }
+
+  public static async getHistory(
+    reportId: string,
+    user: { id: string; roles: Role[] }
+  ) {
+    const report = await prisma.report.findUnique({
+      where: { id: reportId },
+      include: {
+        reviews: {
+          include: { reviewer: { select: { id: true, name: true, email: true } } },
+          orderBy: { createdAt: 'desc' },
+        },
+        challengesDerived: {
+          select: { id: true, referenceNumber: true, title: true, status: true },
+        },
+      },
+    });
+    if (!report) throw new NotFoundError('Report not found');
+
+    const isCreator = report.citizenId === user.id;
+    const isGovOrAdmin = user.roles.some((r) =>
+      ([Role.GOVERNMENT_OFFICER, Role.PLATFORM_ADMIN] as Role[]).includes(r)
+    );
+    if (!isCreator && !isGovOrAdmin) {
+      throw new ForbiddenError('You do not have permission to view the audit history of this report');
+    }
+
+    const auditEvents = await prisma.auditEvent.findMany({
+      where: {
+        resourceType: 'Report',
+        resourceId: reportId,
+      },
+      include: {
+        actor: { select: { id: true, name: true, email: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return {
+      reportId: report.id,
+      referenceNumber: report.referenceNumber,
+      status: report.status,
+      createdAt: report.createdAt,
+      updatedAt: report.updatedAt,
+      reviews: report.reviews,
+      linkedChallenges: report.challengesDerived,
+      auditTrail: auditEvents,
+    };
+  }
 }
 

@@ -96,5 +96,79 @@ export class ProjectsService {
       data: links,
     });
   }
+
+  public static async getTeam(id: string) {
+    const project = await prisma.project.findUnique({
+      where: { id },
+      include: {
+        team: {
+          include: {
+            university: true,
+            members: {
+              include: { user: { select: { id: true, name: true, email: true } } },
+            },
+          },
+        },
+      },
+    });
+    if (!project) throw new NotFoundError('Project not found');
+    return project.team;
+  }
+
+  public static async getProposal(id: string) {
+    const project = await prisma.project.findUnique({
+      where: { id },
+      include: {
+        proposal: {
+          include: {
+            team: true,
+            submittedBy: { select: { id: true, name: true, email: true } },
+            reviews: true,
+          },
+        },
+      },
+    });
+    if (!project) throw new NotFoundError('Project not found');
+    return project.proposal;
+  }
+
+  public static async getMilestones(id: string) {
+    const project = await prisma.project.findUnique({ where: { id } });
+    if (!project) throw new NotFoundError('Project not found');
+
+    return prisma.projectMilestone.findMany({
+      where: { projectId: id },
+      include: { evidence: true, reviewedBy: { select: { id: true, name: true } } },
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
+  public static async getPilots(id: string) {
+    const project = await prisma.project.findUnique({
+      where: { id },
+      include: {
+        pilots: {
+          include: { reviewedBy: { select: { id: true, name: true } } },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+    });
+    if (!project) throw new NotFoundError('Project not found');
+    return project.pilots;
+  }
+
+  public static async getDeployments(id: string) {
+    const project = await prisma.project.findUnique({
+      where: { id },
+      include: {
+        deployments: {
+          include: { responsibleOrg: true, verifiedBy: { select: { id: true, name: true } } },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+    });
+    if (!project) throw new NotFoundError('Project not found');
+    return project.deployments;
+  }
 }
 

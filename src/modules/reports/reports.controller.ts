@@ -98,5 +98,14 @@ export class ReportsController {
       next(error);
     }
   }
+
+  public static async getHistory(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const history = await ReportsService.getHistory(req.params.id, req.user!);
+      ResponseUtil.success(res, history, 'Report history and audit trail retrieved successfully');
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 

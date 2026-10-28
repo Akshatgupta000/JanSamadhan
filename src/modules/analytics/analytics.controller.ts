@@ -20,5 +20,32 @@ export class AnalyticsController {
       next(error);
     }
   }
+
+  public static async getDomains(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await AnalyticsService.getDomainAnalytics();
+      ResponseUtil.success(res, data);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getClusters(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await AnalyticsService.getClusterAnalytics();
+      ResponseUtil.success(res, data);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getProjects(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await AnalyticsService.getProjectAnalytics();
+      ResponseUtil.success(res, data);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 

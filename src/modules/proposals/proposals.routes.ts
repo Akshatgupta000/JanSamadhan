@@ -11,7 +11,7 @@ router.post(
   requireRoles('STUDENT', 'FACULTY', 'UNIVERSITY_ADMIN', 'PLATFORM_ADMIN'),
   ProposalsController.submit
 );
-router.post(
+router.patch(
   '/:id/review',
   authenticate,
   requireRoles('FACULTY', 'GOVERNMENT_OFFICER', 'PLATFORM_ADMIN'),

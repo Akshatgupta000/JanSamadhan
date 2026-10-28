@@ -233,5 +233,114 @@ export class ClusteringService {
 
     return updated;
   }
+
+  public static async addMember(
+    clusterId: string,
+    reportId: string,
+    similarityScore: number = 0.85,
+    user: { id: string; roles: Role[] }
+  ) {
+    const cluster = await prisma.problemCluster.findUnique({
+      where: { id: clusterId },
+      include: { members: { include: { report: true } } },
+    });
+    if (!cluster) throw new NotFoundError('Cluster not found');
+
+    const report = await prisma.report.findUnique({ where: { id: reportId } });
+    if (!report) throw new NotFoundError('Report not found');
+
+    const alreadyMember = cluster.members.some((m) => m.reportId === reportId);
+    if (alreadyMember) throw new BadRequestError('Report is already a member of this cluster');
+
+    const allReports = [...cluster.members.map((m) => m.report), report];
+    const { rawTotal, deduplicated } = ClusteringCalculator.calculateDeduplicatedPopulation(
+      allReports.map((r) => r.estimatedAffectedPopulation)
+    );
+
+    return prisma.$transaction(async (tx) => {
+      await tx.clusterMember.create({
+        data: {
+          clusterId,
+          reportId,
+          similarityScore,
+        },
+      });
+
+      const updated = await tx.problemCluster.update({
+        where: { id: clusterId },
+        data: {
+          rawTotalPopulation: rawTotal,
+          deduplicatedPopulation: deduplicated,
+        },
+        include: { members: { include: { report: true } } },
+      });
+
+      await AuditService.record(
+        {
+          actorId: user.id,
+          actorRole: user.roles[0] || 'GOVERNMENT_OFFICER',
+          action: 'CLUSTER_MEMBER_ADDED',
+          resourceType: 'ProblemCluster',
+          resourceId: clusterId,
+          afterState: { reportId, totalMembers: updated.members.length },
+        },
+        tx
+      );
+
+      return updated;
+    });
+  }
+
+  public static async removeMember(
+    clusterId: string,
+    reportId: string,
+    user: { id: string; roles: Role[] }
+  ) {
+    const cluster = await prisma.problemCluster.findUnique({
+      where: { id: clusterId },
+      include: { members: { include: { report: true } } },
+    });
+    if (!cluster) throw new NotFoundError('Cluster not found');
+
+    const existingMember = cluster.members.find((m) => m.reportId === reportId);
+    if (!existingMember) throw new NotFoundError('Report is not a member of this cluster');
+
+    const remainingReports = cluster.members
+      .filter((m) => m.reportId !== reportId)
+      .map((m) => m.report);
+
+    const { rawTotal, deduplicated } = ClusteringCalculator.calculateDeduplicatedPopulation(
+      remainingReports.map((r) => r.estimatedAffectedPopulation)
+    );
+
+    return prisma.$transaction(async (tx) => {
+      await tx.clusterMember.deleteMany({
+        where: { clusterId, reportId },
+      });
+
+      const updated = await tx.problemCluster.update({
+        where: { id: clusterId },
+        data: {
+          rawTotalPopulation: rawTotal,
+          deduplicatedPopulation: deduplicated,
+        },
+        include: { members: { include: { report: true } } },
+      });
+
+      await AuditService.record(
+        {
+          actorId: user.id,
+          actorRole: user.roles[0] || 'GOVERNMENT_OFFICER',
+          action: 'CLUSTER_MEMBER_REMOVED',
+          resourceType: 'ProblemCluster',
+          resourceId: clusterId,
+          afterState: { reportId, totalMembers: updated.members.length },
+        },
+        tx
+      );
+
+      return updated;
+    });
+  }
 }
 

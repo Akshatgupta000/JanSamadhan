@@ -34,5 +34,50 @@ export class ProjectsController {
       next(error);
     }
   }
+
+  public static async getTeam(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await ProjectsService.getTeam(req.params.id);
+      ResponseUtil.success(res, data);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getProposal(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await ProjectsService.getProposal(req.params.id);
+      ResponseUtil.success(res, data);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getMilestones(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await ProjectsService.getMilestones(req.params.id);
+      ResponseUtil.success(res, data);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getPilots(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await ProjectsService.getPilots(req.params.id);
+      ResponseUtil.success(res, data);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public static async getDeployments(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await ProjectsService.getDeployments(req.params.id);
+      ResponseUtil.success(res, data);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 

@@ -7,3 +7,4 @@ const router = Router();
 router.get('/', authenticate, requireRoles('GOVERNMENT_OFFICER', 'PLATFORM_ADMIN'), AuditController.list);
 
 export default router;
+

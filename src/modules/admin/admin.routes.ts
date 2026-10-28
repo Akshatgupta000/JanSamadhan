@@ -8,3 +8,4 @@ router.get('/status', authenticate, requireRoles('PLATFORM_ADMIN'), AdminControl
 router.get('/jobs', authenticate, requireRoles('PLATFORM_ADMIN'), AdminController.listBackgroundJobs);
 
 export default router;
+

@@ -15,3 +15,4 @@ router.post('/:id/members', authenticate, TeamsController.addMember);
 router.post('/:id/respond', authenticate, TeamsController.respondInvitation);
 
 export default router;
+

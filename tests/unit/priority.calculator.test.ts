@@ -74,3 +74,4 @@ describe('PriorityCalculator Unit Tests', () => {
     expect(scoreLarge).toBeLessThanOrEqual(scoreHuge);
   });
 });
+

@@ -9,3 +9,4 @@ router.patch('/:id/read', authenticate, NotificationsController.markAsRead);
 router.post('/mark-all-read', authenticate, NotificationsController.markAllAsRead);
 
 export default router;
+

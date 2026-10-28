@@ -8,3 +8,4 @@ router.get('/overview', authenticate, requireRoles('GOVERNMENT_OFFICER', 'PLATFO
 router.get('/districts', authenticate, requireRoles('GOVERNMENT_OFFICER', 'PLATFORM_ADMIN', 'UNIVERSITY_ADMIN'), AnalyticsController.getDistrictHeatmap);
 
 export default router;
+

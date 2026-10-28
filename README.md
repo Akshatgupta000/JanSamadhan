@@ -268,3 +268,4 @@ Follow this step-by-step walkthrough to test the complete lifecycle:
     `GET /api/v1/analytics/overview` and `GET /api/v1/analytics/districts` reflect the verified resolution on state and district dashboards.
 14. **Audit Trail Verification:**
     `GET /api/v1/audit` displays the tamper-evident chronological ledger of every decision made throughout the lifecycle.
+

@@ -112,3 +112,4 @@ describe('UniversityMatchingCalculator Unit Tests', () => {
     expect(farScore).toBeLessThanOrEqual(30);
   });
 });
+

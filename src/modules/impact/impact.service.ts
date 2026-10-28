@@ -140,3 +140,4 @@ export class ImpactService {
     return assessments;
   }
 }
+

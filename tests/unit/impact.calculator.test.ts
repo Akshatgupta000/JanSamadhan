@@ -50,3 +50,4 @@ describe('ImpactCalculator Unit Tests', () => {
     expect(result.problemReductionScore).toBe(10); // Minimum penalty score
   });
 });
+

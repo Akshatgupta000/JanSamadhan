@@ -35,3 +35,4 @@ export class AuditRetrievalService {
     return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 }
+
